@@ -1,24 +1,55 @@
-FROM node:18-alpine
-CMD ["npm", "run", "prod"]
-# Start application
+# Multi-stage build for NestJS backend
+FROM node:18-alpine AS builder
 
-  CMD node -e "require('http').get('http://localhost:3001/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-# Health check
+WORKDIR /app
 
-EXPOSE 3001
-# Expose port
+# Copy package files
+COPY package.json package-lock.json ./
 
-RUN npm run build
-# Build the application
-
-COPY . .
-# Copy source code
-
-RUN npm ci --only=production
 # Install dependencies
+RUN npm ci
 
-COPY package*.json ./
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/.env ./
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nestjs -u 1001
+
+# Change ownership
+RUN chown -R nestjs:nodejs /app
+USER nestjs
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3001/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start the application
+CMD ["npm", "run", "prod"]
 # Copy package files
 
 WORKDIR /app
