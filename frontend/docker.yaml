@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Frontend - Next.js Application
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env.local
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    container_name: church-frontend
+    networks:
+      - cms-network
+    volumes:
+      - .:/app
+      - /app/.next
+      - /app/node_modules
+    command: npm run dev
+    stdin_open: true
+    tty: true
+
+networks:
+  cms-network:
+    driver: bridge
+

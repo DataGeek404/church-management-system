@@ -1,0 +1,226 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: church-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_123
+      MYSQL_DATABASE: church_management
+      MYSQL_USER: church_admin
+      MYSQL_PASSWORD: church_password_123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - cms-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: church-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - cms-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 5
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth-service
+    ports:
+      - "3008:3008"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3008
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - JWT_EXPIRY=${JWT_EXPIRY:-24h}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Member Service
+  member-service:
+    build:
+      context: ./services/member-service
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Attendance Service
+  attendance-service:
+    build:
+      context: ./services/attendance-service
+    ports:
+      - "3003:3003"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Financial Service
+  financial-service:
+    build:
+      context: ./services/financial-service
+    ports:
+      - "3004:3004"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Event Service
+  event-service:
+    build:
+      context: ./services/event-service
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3005
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Communication Service
+  communication-service:
+    build:
+      context: ./services/communication-service
+    ports:
+      - "3006:3006"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+  # Reporting Service
+  reporting-service:
+    build:
+      context: ./services/reporting-service
+    ports:
+      - "3007:3007"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3007
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cms-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  cms-network:
+    driver: bridge
+

@@ -1,0 +1,48 @@
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: #1e8449;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+}
+
+.theme-icon {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Dark mode overrides */
+[data-theme='dark'] .theme-toggle {
+  background-color: #1e8449;
+  color: white;
+}
+
+[data-theme='dark'] .theme-toggle:hover {
+  background-color: #27ae60;
+}
+

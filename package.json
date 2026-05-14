@@ -1,0 +1,37 @@
+{
+  "name": "church-management-system",
+  "version": "1.0.0",
+  "description": "A web-based system designed to manage church membership, attendance, finances, events, communication, and reporting.",
+  "type": "module",
+  "scripts": {
+    "install-all": "npm install && npm run install:services && npm run install:frontend",
+    "install:services": "cd backend/api-gateway && npm install && cd ../services && for /d %d in (*) do (cd %d && npm install && cd ..)",
+    "install:frontend": "cd frontend && npm install",
+    "dev": "npm run dev:frontend",
+    "dev:gateway": "cd backend/api-gateway && npm run dev",
+    "dev:services": "cd backend/services && npm run dev:all",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:frontend && npm run build:services",
+    "build:services": "cd backend/api-gateway && npm run build && cd ../services && npm run build:all",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "npm run start:frontend",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend/api-gateway && npm start",
+    "start:gateway": "cd backend/api-gateway && npm start",
+    "start:auth-service": "cd backend/services/auth-service && npm start",
+    "test": "npm run test:frontend",
+    "lint": "npm run lint:frontend"
+  },
+  "keywords": [
+    "church",
+    "management",
+    "membership",
+    "attendance",
+    "financial",
+    "events",
+    "communication"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

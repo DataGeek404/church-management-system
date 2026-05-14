@@ -1,0 +1,17 @@
+{
+  "name": "@church-ms/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and types for Church Management System",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    "./validators": "./src/validators.js",
+    "./utils": "./src/utils.js",
+    "./types": "./src/types.js",
+    "./constants": "./src/constants.js"
+  },
+  "dependencies": {
+    "validator": "^13.9.0"
+  }
+}
+

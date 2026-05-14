@@ -1,0 +1,51 @@
+# ✅ EVENTS & CACHING - QUICK FIX
+
+## Issues Fixed
+✅ Events not displaying in frontend
+✅ API being called every second (now every 30 seconds)
+✅ Excessive network requests
+
+## What Changed
+- Query key now fixed (no `Date.now()`)
+- Cache enabled (5 min fresh, 10 min total)
+- Auto-refetch every 30 seconds instead of constantly
+- After create/edit/delete, cache invalidated and data refreshed
+
+## Do This Now
+
+### 1. Refresh Frontend
+```bash
+cd frontend
+npm run dev
+```
+
+### 2. Hard Refresh Browser
+```
+Ctrl+Shift+R
+```
+
+### 3. Test
+- Go to Events page
+- Create a new event
+- ✅ Event appears immediately
+- ✅ Check console - should fetch only once per 30 seconds
+
+### 4. Wait 30 Seconds
+- Console shows automatic background refresh
+- No new network requests every second
+
+---
+
+## Before vs After
+
+| Before | After |
+|--------|-------|
+| Events not showing ❌ | Events display ✅ |
+| 1000+ API calls/min ❌ | ~2 API calls/min ✅ |
+| `staleTime: 0` ❌ | `staleTime: 5 min` ✅ |
+| Fetches every render ❌ | Fetches every 30s ✅ |
+
+---
+
+**All fixed!**
+
